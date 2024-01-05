@@ -235,12 +235,12 @@ public class DemoApplication {
 默认全局配置文件为 `application.properties` 或者 `application.yml` ，书写方式有所不同，以修改端口为例：
 `application.properties`
 ```properties
-server.port=8090
+server.port=8080
 ```
 `application.yml` 文件
 ```yaml
 server:
-  port: 8090
+  port: 8080
 ```
 
 
@@ -289,13 +289,11 @@ spring:
 ---
 # application-dev.yml 文件中
 server:
-  port: 8083
+  port: 8080
 spring:
   profiles: dev  #指定属于哪个环境
 ---
 # application-prod.yml 文件中
-server:
-  port: 8084
 spring:
   profiles: prod  #指定属于哪个环境
 ```
@@ -309,3 +307,92 @@ Spring Boot 启动时会扫描以下位置的 `application.properties` 或者 `a
 - classpath 根路径
 
 优先级由高到低，高优先级的配置会覆盖低优先级的配置
+
+
+### Actuator 应用监控
+
+> 参考 https://zhuanlan.zhihu.com/p/92697416
+
+**spring-boot 集成 spring-boot-starter-actuator 用于监控 spring-boot 的启动和运行状态**，文档详见 [Production-ready Features](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator)
+
+SpringBoot 中的 Actuator 是一个监控和管理生产环境的模块，可以通过 HTTP 或者 JMX 访问监控和管理端点，比如健康 (health) 检查、审计 (auditing)、统计 (metrics)、HTTP 跟踪 (httptrace)、配置属性 (configprops)、环境变量 (env)、日志 (loggers)、线程转储 (dump) 等等。
+
+使用 Spring Boot Actuator 需要加入如下依赖：
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+Actuator 并没有默认集成在自动配置中，当引入了上面的依赖后，相当于引入了 Actuator 相关的两个项目：
+- `spring-boot-actuator-autoconfigure`：自动配置模块
+- `spring-boot-actuator`：Actuator 核心模块
+
+由于 SpringBoot Actuator 暴露了大量的监控端点，所以为了保证安全需要引入 Spring Security 依赖，这样在访问监控端点时需要进行认证，否则会出现 401 错误
+
+```xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+Spring Security 可以在 application 文件中配置用户名和密码，也可以通过代码配置，这里使用配置文件配置用户名和密码 （测试的时候可以不需要引入）
+
+
+访问链接 http://localhost:8080/actuator 可以看到如下内容
+```json
+{"_links":{"self":{"href":"http://localhost:8080/actuator","templated":false},"health":{"href":"http://localhost:8080/actuator/health","templated":false},"health-path":{"href":"http://localhost:8080/actuator/health/{*path}","templated":true}}}
+```
+
+默认端点暴露地址（其他端点可以查看 [Endpoints](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator)）：
+- `/actuator`：显示所有可用的监控端点
+- `/actuator/health`：显示应用的健康信息
+- `/health/{component}/{instance}`：显示指定组件的健康信息
+- `/health/{component}`：显示指定组件的健康信息
+- `/actuator/info`：显示应用的信息
+
+可以在 `application.yml` 文件中配置 Actuator 的端点
+```yml
+# 若要访问端点信息，需要配置用户名和密码
+spring:
+  security:
+    user:
+      name: user
+      password: 123456
+management:
+    # 端点信息接口与应用程序端口分离
+    server:
+        port: 8081
+  endpoints:
+    web:
+      exposure:
+        # 开启全部监控
+        include: "*"
+        # exclude: health
+        # 代表设置监控的基础路径为 `/monitor`，默认为 `/actuator`
+        # base-path: /monitor
+        
+        # 配置跨域
+        cors:
+            # 设置允许所有域名调用
+            allowed-origins: "*"
+            allowed-methods: "*"
+
+            # 设置允许来自 `https://www.bing.com` 域的 `GET` 和 `POST` 调用
+            # allowed-origins: https://www.bing.com
+            # allowed-methods: GET,POST
+
+            allowed-headers: "*"
+            allow-credentials: true
+  endpoint:
+        health:
+            # 显示详细的健康信息，"always"可以显示硬盘使用情况和线程情况
+            show-details: always
+        shutdown:
+            # 是否允许远程关闭应用
+            enabled: true
+```
+
+### Admin 管控台的集成
+Admin 管控台 与 Actuator 应用监控互相搭配使用
