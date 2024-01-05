@@ -120,6 +120,8 @@ java HelloWorld
 
 ## 简单的 SpringBoot 项目
 
+Spring 为企业级 Java 开发提供了一种相对简单的方法，通过 依赖注入(Dependency Injection) 和 面向切面编程(Aspect Oriented Programming) 来实现松耦合的 Java EE 应用程序开发。Spring Boot 是 Spring 的一套快速配置脚手架，可以基于 Spring Boot 快速开发单个微服务，Spring Boot 使用了特定的方式来进行配置，从而使开发人员不再需要定义样板化的配置。
+
 ### Spring Initializr 初始化应用程序
 
 ![Spring Initializr](./images/spring-initializr-web.png)
@@ -151,7 +153,18 @@ java HelloWorld
 └── src
     ├── main
     │   ├── java/com/example/demo
-    │   │   └── DemoApplication.java
+    │   │   ├── DemoApplication.java 
+    │   │   │   # 下面其余目录为工程一般的结构，不会默认生成
+    │   │   ├── domain
+    │   │   │   ├── Customer.java
+    │   │   │   └── CustomerRepository.java
+    │   │   ├── service
+    │   │   │   └── CustomerService.java
+    │   │   ├── controller
+    │   │   │   └── CustomerController.java
+    │   │   ├── config
+    │   │   │    └── userConfig.java
+    │   │   ...
     │   └── resources
     │       └── application.properties
     └── test/java/com/example/demo
@@ -160,7 +173,12 @@ java HelloWorld
 13 directories, 7 files
 ```
 
-- `src/main/java` 为项目的主要逻辑代码，`DemoApplication.java` 为项目入口文件
+- `src/main/java` 为项目的主要逻辑代码
+  - `DemoApplication.java` 为项目入口文件
+  - domain 用于实体（Entity）与数据访问层（Repository）
+  - service 是业务类代码
+  - controller 是页面访问控制代码
+  - config 是配置类代码
 - `src/main/resources` 为项目的资源文件，`application.properties` 为项目的默认配置文件，可以修改为 `application.yml`。书写方式有所不同
 - `src/test/java` 为项目的测试代码，`DemoApplicationTests.java` 为项目的测试入口文件
 
@@ -188,9 +206,9 @@ public class DemoApplication {
 }
 ```
 - `@SpringBootApplication` 负责启动引导应用程序，该注解包含了三个注解
-  - `@Configuration`：标记类为应用程序上下文的Bean定义的源。
-  - `@EnableAutoConfiguration`：告诉Spring Boot根据添加的jar依赖自动配置你的Spring应用。
-  - `@ComponentScan`：让Spring去寻找其他组件、配置和服务，自动扫描包以找到其他的Spring组件。
+  - `@Configuration`：允许在上下文中注册额外的 bean 或导入其他配置类
+  - `@EnableAutoConfiguration`：启用 SpringBoot 的自动配置机制
+  - `@ComponentScan`：扫描被 `@Component` (`@Service`,`@Controller`) 注解的 bean，注解默认会扫描该类所在的包下所有的类
 - `SpringApplication.run(DemoApplication.class, args);` 启动引导应用程序，`DemoApplication.class` 为项目入口文件，`args` 为启动参数
 
 ### hello world
@@ -226,6 +244,10 @@ public class DemoApplication {
 }
 
 ```
+
+`@RestController`  = `@Controller` + `@ResponseBody`，`@Controller` 用于标注控制层组件，而 `@ResponseBody` 用于将返回值作为响应体返回，而不是返回一个视图。`Rest` 指的是 RESTful，即 REST 风格的控制器，`@RestController` 会将返回值转换为 JSON 格式返回
+
+
 
 
 ### Properties 属性配置
@@ -441,4 +463,9 @@ spring:
                     metadata:
                         user.name: ${spring.security.user.name}
                         user.password: ${spring.security.user.password}
-``
+```
+
+### 日志
+
+
+
