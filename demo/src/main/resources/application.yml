@@ -1,0 +1,10 @@
+server:
+  port: 8090
+
+application:
+  name: SpringBootApplication
+  version: 1.0.0
+
+developer:
+  name: developer1
+  website: www.developer1.com

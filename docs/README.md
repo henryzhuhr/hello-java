@@ -14,7 +14,7 @@ JDK(Java Development Kit) 是 Java 语言的软件开发工具包(SDK)
 ### Java 配置环境
 #### Linux/MacOS 下环境配置
 
-Linux 下编辑用户级的环境变量文件 `~/.bashrc` ， MacOS下下编辑用户级的环境变量文件 `~/.zshrc`
+Linux 下编辑用户级的环境变量文件 `~/.bashrc` ， MacOS 下编辑用户级的环境变量文件 `~/.zshrc`
 ```sh
 # EX: export JAVA_HOME="/usr/lib/jvm/jdk-17"
 # EX: export JAVA_HOME="$HOME/program/jdk-21.0.1.jdk/Contents/Home"
@@ -127,7 +127,7 @@ java HelloWorld
 访问 [Spring Initializr](https://start.spring.io) 官网，设置项目参数:
 - Project: 构建工具，选 Maven，Gradle 比较新，但是 Maven 更加主流、成熟
 - Language: 语言，选 Java
-- Spring Boot: 版本
+- Spring Boot: 版本可以在 [Spring Boot](https://spring.io/projects/spring-boot/#learn) 查看， 其中·`SNAPSHOT` 为快照版，`M` 为里程碑版，`RC` 为候选版，`RELEASE` 为正式版
 - Project Metadata: 项目元数据
   - Group: 组名， `com.example`
   - Artifact:项目名， demo
@@ -161,7 +161,7 @@ java HelloWorld
 ```
 
 - `src/main/java` 为项目的主要逻辑代码，`DemoApplication.java` 为项目入口文件
-- `src/main/resources` 为项目的资源文件，`application.properties` 为项目的配置文件
+- `src/main/resources` 为项目的资源文件，`application.properties` 为项目的默认配置文件，可以修改为 `application.yml`。书写方式有所不同
 - `src/test/java` 为项目的测试代码，`DemoApplicationTests.java` 为项目的测试入口文件
 
 启动项目，进入项目文件夹 `demo` ，执行（或者在 VSCode 中点击 main 函数上的 `run` ）
@@ -228,14 +228,84 @@ public class DemoApplication {
 ```
 
 
-### 修改端口号
+### Properties 属性配置
 
-修改默认端口号，修改 `application.properties` 文件，并重启项目
+> [最全面的SpringBoot配置文件详解](https://zhuanlan.zhihu.com/p/57693064)
+
+默认全局配置文件为 `application.properties` 或者 `application.yml` ，书写方式有所不同，以修改端口为例：
+`application.properties`
 ```properties
-server.port=8081
+server.port=8090
 ```
-如果你使用的是 `application.yml` 文件，修改如下
+`application.yml` 文件
 ```yaml
 server:
-  port: 8081
+  port: 8090
 ```
+
+
+Spring Boot 属性配置，有两种方式：
+- 通过 `@Value` 注解注入。这种方式适用于单个属性的注入
+- 通过 `@ConfigurationProperties` 注解注入。这种方式适用于多个属性的注入，并且可以将属性分组
+
+如果使用 `@Value` 注解，你可以直接在字段上使用这个注解，然后在括号中指定属性的名称
+```java
+@Component
+public class ApplicationProperty {
+    @Value("${application.name}")
+    private String name;
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+}
+```
+
+如果使用 `@ConfigurationProperties` 注解，你需要在 `application.properties` 文件中指定属性的前缀，然后在字段上使用这个注解，括号中指定属性的名称
+```java
+@ConfigurationProperties(prefix = "developer")
+@Component
+public class DeveloperProperty {
+    private String name;
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+}
+```
+
+自定义配置文件时，可以使用 `@Validated` 注解对注入的值进行一些简单的校验
+
+
+#### 多配置文件
+
+通过可以把一个 `yml` 文档分割为多个，并可以通过 `spring.profiles.active` 属性指定使用哪个配置文件
+
+```yml
+# application.yml 文件中
+server:
+  port: 8081
+spring:
+  profiles:
+    active: prod #指定使用哪个环境
+---
+# application-dev.yml 文件中
+server:
+  port: 8083
+spring:
+  profiles: dev  #指定属于哪个环境
+---
+# application-prod.yml 文件中
+server:
+  port: 8084
+spring:
+  profiles: prod  #指定属于哪个环境
+```
+
+#### 配置文件加载顺序
+
+Spring Boot 启动时会扫描以下位置的 `application.properties` 或者 `application.yml` 文件作为 Spring Boot 的默认配置文件
+- 当前目录下的 `config` 子目录
+- 当前目录
+- classpath 下的 `config` 包
+- classpath 根路径
+
+优先级由高到低，高优先级的配置会覆盖低优先级的配置
