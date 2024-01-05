@@ -16,10 +16,17 @@ spring:
     user:
       name: user
       password: 123456
+  boot:
+    admin:
+      client:
+        url: "http://localhost:8080"
+      instance:
+          metadata:
+            # 客户端端点信息的安全认证信息
+            user.name: ${spring.security.user.name}
+            user.password: ${spring.security.user.password}
+
 management:
-  # 端点信息接口使用的端口，为了和主系统接口使用的端口进行分离
-  server:
-    port: 8081
   # 端点健康情况，默认值"never"，设置为"always"可以显示硬盘使用情况和线程情况
   endpoint:
     health:
@@ -29,3 +36,4 @@ management:
     web:
       exposure:
         include: '*'
+

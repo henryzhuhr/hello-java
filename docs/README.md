@@ -394,5 +394,51 @@ management:
             enabled: true
 ```
 
-### Admin 管控台的集成
-Admin 管控台 与 Actuator 应用监控互相搭配使用
+### Admin 管控台
+> 文档 [Spring Boot Admin Docs](https://docs.spring-boot-admin.com/current/getting-started.html)和[参考指南](https://consolelog.gitee.io/docs-spring-boot-admin-docs-chinese/)
+
+Spring Boot Admin(SBA) 管控台 与 Actuator 应用监控互相搭配使用，主要有两部分：
+- server：提供用户交互界面来显示并与 Actuator 交互。
+- client：一个用于将应用程序注册到Spring Boot Admin Server的库。
+
+
+添加依赖项
+```xml
+<dependency>
+    <groupId>de.codecentric</groupId>
+	<artifactId>spring-boot-admin-starter-server</artifactId>
+	<version>3.1.8</version>
+</dependency>
+<dependency>
+	<groupId>de.codecentric</groupId>
+	<artifactId>spring-boot-admin-starter-client</artifactId>
+	<version>3.1.8</version>
+</dependency>
+```
+
+在main class上添加`@EnableAdminServer`注解，启用SBA服务器端配置:
+
+```java
+@Configuration
+@EnableAutoConfiguration
+@EnableAdminServer
+public class SpringBootAdminApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SpringBootAdminApplication.class, args);
+    }
+}
+```
+
+修改 application 配置文件 
+```application.properties
+spring:
+    boot:
+        admin:
+            client:
+                url: "http://localhost:8080"
+                instance:
+                    name: ${spring.application.name}
+                    metadata:
+                        user.name: ${spring.security.user.name}
+                        user.password: ${spring.security.user.password}
+``
