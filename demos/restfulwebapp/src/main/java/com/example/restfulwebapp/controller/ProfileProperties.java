@@ -16,10 +16,14 @@ import jakarta.validation.constraints.NotEmpty; // 添加依赖 spring-boot-star
 @Validated
 public class ProfileProperties {
     @NotEmpty
+    @Getter
+    @Setter
     private String name;
 
     @NotEmpty
     @Email
+    @Getter
+    @Setter
     private String email;
 
     private Boolean handsome = Boolean.TRUE;// 如果配置文件中没有读取到属性，就使用默认值
