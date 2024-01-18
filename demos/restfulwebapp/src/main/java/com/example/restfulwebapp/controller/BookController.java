@@ -63,14 +63,19 @@ public class BookController {
     /**
      * 根据书籍名称查询书籍
      * 
+     * @brief @RequestParam("name") 表示请求参数中必须包含 name 参数，否则会报错，并且将 name 参数的值赋值给
+     *        book_name
      * @param name
      * @return 书籍列表
+     *         请求示例：http://localhost:8080/api/book?name=book1
+     * 
      */
     @GetMapping("/book")
-    public ResponseEntity<List<Book>> apiGetBookByName(@RequestParam("name") String name) {
+    public ResponseEntity<List<Book>> apiGetBookByName(@RequestParam("name") String book_name) {
+
         List<Book> results = book_list
                 .stream() // 将 list 转换为 stream
-                .filter(book -> book.getName().equals(name)) // 过滤出符合条件的元素
+                .filter(book -> book.getName().equals(book_name)) // 过滤出符合条件的元素
                 .collect(Collectors.toList());// 将过滤出的元素收集到list中
         return ResponseEntity.ok(results);
     }
