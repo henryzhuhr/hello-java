@@ -11,6 +11,8 @@ JDK(Java Development Kit) 是 Java 语言的软件开发工具包(SDK)
 
 [Java](https://www.oracle.com/java/technologies/downloads/archive/)
 
+参考 [*如何在 Ubuntu 24.04 LTS 上安装 Java - 系统极客*](https://www.sysgeek.cn/install-java-ubuntu/)
+
 ### Java 配置环境
 #### Linux/MacOS 下环境配置
 
@@ -239,3 +241,4 @@ server.port=8081
 server:
   port: 8081
 ```
+
