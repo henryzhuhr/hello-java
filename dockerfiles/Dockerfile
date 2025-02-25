@@ -99,3 +99,31 @@ RUN echo "export PATH=${JAVA_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc
 RUN echo "export M2_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
 RUN echo "export MAVEN_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
 RUN echo "export PATH=${M2_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc
+
+
+# 定义 settings.xml 文件路径
+ENV SETTINGS_FILE="$USER_HOME/.m2/settings.xml"
+
+# 创建并修改 settings.xml 文件的脚本
+RUN mkdir -p "$(dirname "$SETTINGS_FILE")" && \
+    if [ ! -f "$SETTINGS_FILE" ]; then \
+        echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\" \
+              xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
+              xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd\"> \
+            <mirrors></mirrors> \
+        </settings>" > "$SETTINGS_FILE"; \
+    fi && \
+    # 确保 <mirrors> 节点存在
+    if ! grep -q "<mirrors>" "$SETTINGS_FILE"; then \
+        sed -i 's|</settings>|<mirrors></mirrors></settings>|' "$SETTINGS_FILE"; \
+    fi && \
+    # 插入阿里云镜像配置（如果不存在）
+    if ! grep -q "<id>aliyunmaven</id>" "$SETTINGS_FILE"; then \
+        sed -i '/<mirrors>/a \
+<mirror>\
+    <id>aliyunmaven</id>\
+    <mirrorOf>central</mirrorOf>\
+    <name>Aliyun Maven</name>\
+    <url>https://maven.aliyun.com/repository/public</url>\
+</mirror>' "$SETTINGS_FILE"; \
+    fi
