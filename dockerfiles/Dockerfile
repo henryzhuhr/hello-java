@@ -101,29 +101,18 @@ RUN echo "export MAVEN_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
 RUN echo "export PATH=${M2_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc
 
 
-# 定义 settings.xml 文件路径
-ENV SETTINGS_FILE="$USER_HOME/.m2/settings.xml"
-
-# 创建并修改 settings.xml 文件的脚本
-RUN mkdir -p "$(dirname "$SETTINGS_FILE")" && \
-    if [ ! -f "$SETTINGS_FILE" ]; then \
-        echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\" \
-              xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
-              xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd\"> \
-            <mirrors></mirrors> \
-        </settings>" > "$SETTINGS_FILE"; \
-    fi && \
-    # 确保 <mirrors> 节点存在
-    if ! grep -q "<mirrors>" "$SETTINGS_FILE"; then \
-        sed -i 's|</settings>|<mirrors></mirrors></settings>|' "$SETTINGS_FILE"; \
-    fi && \
-    # 插入阿里云镜像配置（如果不存在）
-    if ! grep -q "<id>aliyunmaven</id>" "$SETTINGS_FILE"; then \
-        sed -i '/<mirrors>/a \
-<mirror>\
-    <id>aliyunmaven</id>\
-    <mirrorOf>central</mirrorOf>\
-    <name>Aliyun Maven</name>\
-    <url>https://maven.aliyun.com/repository/public</url>\
-</mirror>' "$SETTINGS_FILE"; \
-    fi
+# 修改Maven settings.xml配置，添加阿里云镜像源
+RUN SETTINGS_FILE="/usr/share/maven/conf/settings.xml" \
+  mkdir -p "$(dirname "$SETTINGS_FILE")" && \
+  if [ -f ${SETTINGS_FILE} ]; then \
+    # 在<mirrors>标签下添加阿里云镜像配置
+    sed -i '/<mirrors>/!b' -e '/<mirrors>/a\  <mirror>\n    <id>aliyunmaven</id>\n    <mirrorOf>central</mirrorOf>\n    <name>aliyun maven</name>\n    <url>https://maven.aliyun.com/repository/public</url>\n  </mirror>' ${SETTINGS_FILE}; \
+    # 如果<mirrors>标签不存在，则创建并添加配置
+    if ! grep -q '<mirrors>' ${SETTINGS_FILE}; then \
+      sed -i '/<settings>/a\  <mirrors>\n  </mirrors>' ${SETTINGS_FILE}; \
+      sed -i '/<mirrors>/a\  <mirror>\n    <id>aliyunmaven</id>\n    <mirrorOf>central</mirrorOf>\n    <name>aliyun maven</name>\n    <url>https://maven.aliyun.com/repository/public</url>\n  </mirror>' ${SETTINGS_FILE}; \
+    fi; \
+  else \
+    # 如果文件不存在，直接创建新的settings.xml
+    echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<settings>\n  <mirrors>\n    <mirror>\n      <id>aliyunmaven</id>\n      <mirrorOf>central</mirrorOf>\n      <name>aliyun maven</name>\n      <url>https://maven.aliyun.com/repository/public</url>\n    </mirror>\n  </mirrors>\n</settings>" > ${SETTINGS_FILE}; \
+  fi
