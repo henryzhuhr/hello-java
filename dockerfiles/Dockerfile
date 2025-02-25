@@ -32,7 +32,7 @@ ARG APT_INSTALL_DEV_LIST="$APT_INSTALL_DEV_LIST vim nano tree pciutils iputils-p
 ARG APT_INSTALL_DEV_LIST="$APT_INSTALL_DEV_LIST git openssh-client"
 ARG APT_INSTALL_DEV_LIST="$APT_INSTALL_DEV_LIST build-essential cmake"
 ARG APT_INSTALL_DEV_LIST="$APT_INSTALL_DEV_LIST python3-pip python3-venv"
-ARG APT_INSTALL_DEV_LIST="$APT_INSTALL_DEV_LIST default-jdk"
+ARG APT_INSTALL_DEV_LIST="$APT_INSTALL_DEV_LIST default-jdk maven"
 
 
 # 自定义镜像源 (tuna 在自定义网络下不可访问)
@@ -94,4 +94,8 @@ ENV VIRTUAL_ENV_DISABLE_PROMPT=1
 #   Java 环境
 # ============================================================
 RUN echo "export JAVA_HOME=/usr/lib/jvm/default-java" >> $USER_HOME/.bashrc
-RUN echo "PATH=$JAVA_HOME/bin:$PATH" >> $USER_HOME/.bashrc
+RUN echo "export PATH=${JAVA_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc
+
+RUN echo "export M2_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
+RUN echo "export MAVEN_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
+RUN echo "export PATH=${M2_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc
