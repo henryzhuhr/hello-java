@@ -94,24 +94,24 @@ ENV VIRTUAL_ENV_DISABLE_PROMPT=1
 # ============================================================
 #   Java 环境
 # ============================================================
-RUN echo "export JAVA_HOME=/usr/lib/jvm/default-java" >> $USER_HOME/.bashrc
-RUN echo "export PATH=${JAVA_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc
-
-RUN echo "export M2_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
-RUN echo "export MAVEN_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
-RUN echo "export PATH=${M2_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc
-
-# 修改Maven settings.xml配置，添加阿里云镜像源
-RUN export SETTINGS_FILE="/usr/share/maven/conf/settings.xml" && \
+RUN echo "export JAVA_HOME=/usr/lib/jvm/default-java" >> $USER_HOME/.bashrc && \
+  echo "export PATH=${JAVA_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc && \
+  echo "export M2_HOME=/usr/share/maven" >> $USER_HOME/.bashrc && \
+  echo "export MAVEN_HOME=/usr/share/maven" >> $USER_HOME/.bashrc && \
+  echo "export PATH=${M2_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc && \
+  # 修改 Maven settings.xml 配置，添加阿里云镜像源 (https://maven.apache.org/settings.html)
+  export SETTINGS_FILE="/usr/share/maven/conf/settings.xml" && \
   mkdir -p "$(dirname "$SETTINGS_FILE")" && \
   if [ -f ${SETTINGS_FILE} ]; then \
     # 在<mirrors>标签下添加阿里云镜像配置
-    sed -i '/<mirrors>/!b' -e '/<mirrors>/a\  <mirror>\n    <id>aliyunmaven</id>\n    <mirrorOf>central</mirrorOf>\n    <name>aliyun maven</name>\n    <url>https://maven.aliyun.com/repository/public</url>\n  </mirror>' ${SETTINGS_FILE}; \
+    sed -i '/<mirrors>/!b' -e '/<mirrors>/a\  <!-- https://developer.aliyun.com/mvn/guide --><mirror><id>aliyunmaven</id><mirrorOf>*</mirrorOf><name>阿里云公共仓库</name><url>https://maven.aliyun.com/repository/public</url></mirror>' ${SETTINGS_FILE}; \
+    sed -i '/<mirrors>/!b' -e '/<mirrors>/a\  <!-- https://mirrors.cloud.tencent.com/help/maven.html --><mirror><id>nexus-tencentyun</id><mirrorOf>*</mirrorOf><name>Nexus tencentyun</name><url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url></mirror>' ${SETTINGS_FILE}; \
     # 如果<mirrors>标签不存在，则创建并添加配置
     if ! grep -q '<mirrors>' ${SETTINGS_FILE}; then \
       sed -i '/<settings>/a\  <mirrors>\n  </mirrors>' ${SETTINGS_FILE}; \
-      sed -i '/<mirrors>/a\  <mirror>\n    <id>aliyunmaven</id>\n    <mirrorOf>central</mirrorOf>\n    <name>aliyun maven</name>\n    <url>https://maven.aliyun.com/repository/public</url>\n  </mirror>' ${SETTINGS_FILE}; \
-    fi; \
+      sed -i '/<mirrors>/a\  <!-- https://developer.aliyun.com/mvn/guide --><mirror><id>aliyunmaven</id><mirrorOf>*</mirrorOf><name>阿里云公共仓库</name><url>https://maven.aliyun.com/repository/public</url></mirror>' ${SETTINGS_FILE}; \
+      sed -i '/<mirrors>/a\  <!-- https://mirrors.cloud.tencent.com/help/maven.html --><mirror><id>nexus-tencentyun</id><mirrorOf>*</mirrorOf><name>Nexus tencentyun</name><url>http://mirrors.cloud.tencent.com/nexus/repository/maven-public/</url></mirror>' ${SETTINGS_FILE}; \  
+   fi; \
   else \
     # 如果文件不存在，直接创建新的settings.xml
     echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<settings>\n  <mirrors>\n    <mirror>\n      <id>aliyunmaven</id>\n      <mirrorOf>central</mirrorOf>\n      <name>aliyun maven</name>\n      <url>https://maven.aliyun.com/repository/public</url>\n    </mirror>\n  </mirrors>\n</settings>" > ${SETTINGS_FILE}; \
