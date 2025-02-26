@@ -36,9 +36,10 @@ ARG APT_INSTALL_DEV_LIST="$APT_INSTALL_DEV_LIST default-jdk maven"
 
 
 # 自定义镜像源 (tuna 在自定义网络下不可访问)
-# ARG MIRRORS_URL="mirrors.tuna.tsinghua.edu.cn"
-ARG MIRRORS_URL="mirrors.ustc.edu.cn"
-ENV DEBIAN_FRONTEND=noninteractive
+ARG MIRRORS_URL="mirrors.tuna.tsinghua.edu.cn"
+# ARG MIRRORS_URL="mirrors.ustc.edu.cn"
+# ARG MIRRORS_URL="mirrors.tencentyun.com"
+# ENV DEBIAN_FRONTEND=noninteractive
 
 # set -x 选项会使得每个命令在执行前都会被打印出来，报错时会显示是哪个命令出错
 RUN set -x && \
@@ -100,9 +101,8 @@ RUN echo "export M2_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
 RUN echo "export MAVEN_HOME=/usr/share/maven" >> $USER_HOME/.bashrc
 RUN echo "export PATH=${M2_HOME}/bin:${PATH}" >> $USER_HOME/.bashrc
 
-
 # 修改Maven settings.xml配置，添加阿里云镜像源
-RUN SETTINGS_FILE="/usr/share/maven/conf/settings.xml" \
+RUN export SETTINGS_FILE="/usr/share/maven/conf/settings.xml" && \
   mkdir -p "$(dirname "$SETTINGS_FILE")" && \
   if [ -f ${SETTINGS_FILE} ]; then \
     # 在<mirrors>标签下添加阿里云镜像配置

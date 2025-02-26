@@ -18,7 +18,7 @@ public class UserController {
     private UserService userService;
 
     /**
-     * test curl: curl http://localhost:8080/user/hello
+     * test: curl http://localhost:8080/user/hello
      * 
      * @return
      */
@@ -29,13 +29,19 @@ public class UserController {
 
     /**
      * test: curl http://localhost:8080/user/1
+     * test: curl http://localhost:8080/user/47bf8a21-9e95-40c9-a3b4-8eecc455f90d
      * 
      * @param id
      * @return
      */
     @GetMapping("/user/{id}")
     public User getUserById(@PathVariable("id") String id) {
-        return userService.getUserById(id);
+        User user=userService.getUserById(id);
+        if (user == null) {
+            return new User();
+        }else{
+            return user;
+        }
     }
 
     /**

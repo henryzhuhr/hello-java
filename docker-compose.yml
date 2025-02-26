@@ -45,7 +45,7 @@ services:
       - default
     volumes:
       - mysql_data:/var/lib/mysql
-      # - ./sql/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql  # 初始化数据库脚本
+      - ./sql/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql  # 初始化数据库脚本
       # - ./sql/mysql/sql:/opt/sql  # 初始化数据库脚本
 
   # Redis

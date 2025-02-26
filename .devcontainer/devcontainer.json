@@ -46,7 +46,8 @@
 				"vscjava.vscode-java-pack",
 				"vscjava.vscode-spring-initializr",
 				"redhat.vscode-xml",
-				"cweijan.vscode-mysql-client2"
+				"cweijan.vscode-mysql-client2",
+				"cweijan.dbclient-jdbc"
 			]
 		}
 	}
