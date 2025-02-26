@@ -4,7 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.hello_java.dao.User;
-import com.example.hello_java.dao.UserRepository;
+import com.example.hello_java.exception.UserNotFoundException;
+import com.example.hello_java.repository.UserRepository;
 import com.example.hello_java.service.UserService;
 
 @Service
@@ -15,7 +16,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(String id) {
-        return userRepository.findById(id).orElseThrow(RuntimeException::new);
+        return userRepository.findById(id)
+        .orElseThrow(() -> new UserNotFoundException("user "+id+" not found"));
     }
 
     @Override

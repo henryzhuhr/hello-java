@@ -1,7 +1,9 @@
-package com.example.hello_java.dao;
+package com.example.hello_java.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.example.hello_java.dao.User;
 
 /**
  * UserRepository
