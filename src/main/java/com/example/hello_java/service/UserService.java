@@ -11,5 +11,5 @@ public interface UserService {
      */
     public User getUserById(String id);
 
-    public User addUser(User user);
+    public String addUser(User user);
 }

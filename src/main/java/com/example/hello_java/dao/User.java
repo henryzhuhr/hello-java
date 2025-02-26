@@ -1,5 +1,7 @@
 package com.example.hello_java.dao;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

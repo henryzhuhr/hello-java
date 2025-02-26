@@ -47,7 +47,10 @@
 				"vscjava.vscode-spring-initializr",
 				"redhat.vscode-xml",
 				"cweijan.vscode-mysql-client2",
-				"cweijan.dbclient-jdbc"
+				"cweijan.dbclient-jdbc",
+				"vmware.vscode-spring-boot",
+				"Oracle.oracle-java",
+				"vscjava.vscode-lombok"
 			]
 		}
 	}

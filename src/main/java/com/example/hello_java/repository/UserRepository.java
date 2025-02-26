@@ -11,4 +11,11 @@ import com.example.hello_java.dao.User;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
+
+    /**
+     * 根据 email 查找用户
+     * @param email
+     * @return
+     */
+    User findByEmail(String email);
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.hello_java.dao.User;
-import com.example.hello_java.exception.UserNotFoundException;
 import com.example.hello_java.response.ApiResponse;
 import com.example.hello_java.service.UserService;
 
@@ -22,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     /**
-     * test: curl http://localhost:8080/user/hello
+     * curl http://localhost:8080/user/hello
      * 
      * @return
      */
@@ -32,7 +31,7 @@ public class UserController {
     }
 
     /**
-     * test: curl http://localhost:8080/user/47bf8a21-9e95-40c9-a3b4-8eecc455f90d
+     * curl http://localhost:8080/user/47bf8a21-9e95-40c9-a3b4-8eecc455f90d
      * 
      * @param id
      * @return
@@ -50,14 +49,17 @@ public class UserController {
     }
 
     /**
-     * test: curl -X POST http://localhost:8080/user/add -H "Content-Type:application/json" -d '{"username": "Jane Doe", "email": "jane.doe@example.com","password": "password"}'
+     * curl -X POST http://localhost:8080/user/add -H "Content-Type:application/json" -d '{"username": "Jane Doe", "email": "jane.doe@example.com","password": "password"}'
+     * curl -X POST http://localhost:8080/user/add -H "Content-Type:application/json" -d '{"username": "Tim Coolk", "email": "tim.cool@example.com","password": "password"}'
+     * curl -X POST http://localhost:8080/user/add -H "Content-Type:application/json" -d '{"email": "default@example.com","password": "password"}'
      * 
      * @param user
      * @return
      */
     @PostMapping("/user/add")
-    public User addUser(@RequestBody User user) {
-        return userService.addUser(user);
+    public ResponseEntity<ApiResponse<String>> addUser(@RequestBody User user) {
+        String id=userService.addUser(user);
+        return ResponseEntity.ok(ApiResponse.success(id)); 
         // return true;
     }
 }

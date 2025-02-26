@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS `user`;
 -- 创建数据库
 CREATE TABLE `user` (
-    `id` varchar(255) NOT NULL COMMENT 'uuid',
+    `id` varchar(255) NOT NULL PRIMARY KEY COMMENT 'uuid',
     `email` varchar(255) NOT NULL COMMENT '邮箱',
-    `username` varchar(255) NOT NULL COMMENT '用户名',
+    `username` varchar(255) NOT NULL UNIQUE COMMENT '用户名',
     `password` varchar(255) NOT NULL COMMENT '密码',
     `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
