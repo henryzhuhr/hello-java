@@ -1,16 +1,22 @@
 package com.example.hello_java.service.impl;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.hello_java.dao.User;
 import com.example.hello_java.exception.UserNotFoundException;
 import com.example.hello_java.repository.UserRepository;
 import com.example.hello_java.service.UserService;
-
-import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -40,6 +46,7 @@ public class UserServiceImpl implements UserService {
     @Value("${user.default.username}")
     private String defaultUsername;
 
+    @SuppressWarnings("null")
     @Override
     public User getUserById(String id) {
         return userRepository.findById(id)
@@ -65,12 +72,22 @@ public class UserServiceImpl implements UserService {
             user.setUsername(defaultUsername);
         }
 
+        // 设置用户时间
+        LocalDateTime localDateTime = ZonedDateTime.now(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+        Date now = new Date(Timestamp.valueOf(localDateTime).getTime());
+        logger.info("Current date and time in Asia/Shanghai: " + now);
+
+        if (Objects.isNull(user.getCreateTime())){
+            user.setCreateTime(now);
+        }
+
         try {
-            User insertedUser = userRepository.save(user);
-            logger.info("User inserted: " + insertedUser);
-            return insertedUser.getId();
+            // User insertedUser = userRepository.save(user);
+            // logger.info("User inserted: " + insertedUser);
+            // return insertedUser.getId();
+            return "ssss";
         } catch (Exception e) {
-            e.printStackTrace();
+            // e.printStackTrace();
             return null;
         }
 
