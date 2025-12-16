@@ -34,7 +34,8 @@ class RegexConstantTest {
         assertFalse(pattern.matcher("user@.com").matches(), "缺少域名名称不应该匹配");
         assertFalse(pattern.matcher("user@domain").matches(), "缺少顶级域名不应该匹配");
         assertFalse(pattern.matcher("user@domain.").matches(), "顶级域名后缺少内容不应该匹配");
-        // assertFalse(pattern.matcher("user@domain.a").matches(), "单字母 TLD 不应匹配（IANA 不分配）");
+        // assertFalse(pattern.matcher("user@domain.a").matches(), "单字母 TLD 不应匹配（IANA
+        // 不分配）");
         assertFalse(pattern.matcher("user..name@domain.com").matches(), "连续点不应匹配");
         assertFalse(pattern.matcher("user--name@domain.com").matches(), "连续短横线不应匹配（域名中允许，但本地部分通常不允许）");
         assertFalse(pattern.matcher("user++name@domain.com").matches(), "连续加号不应匹配");
@@ -63,6 +64,7 @@ class RegexConstantTest {
         assertTrue(pattern.matcher("中文用户名").matches(), "包含中文字符的用户名应该匹配");
         assertTrue(pattern.matcher("user.name_123-中文").matches(), "包含混合字符的用户名应该匹配");
         assertTrue(pattern.matcher("user.name_123-中文").matches(), "包含混合字符的用户名应该匹配");
+        assertTrue(pattern.matcher("ZHOU.ying-test_123()（）").matches(), "包含混合字符的用户名应该匹配");
 
         // Boundary checks
         assertTrue(pattern.matcher("a").matches(), "1 个字符应该匹配");

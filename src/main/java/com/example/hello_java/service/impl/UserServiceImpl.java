@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.example.hello_java.dao.User;
+import com.example.hello_java.entity.User;
 import com.example.hello_java.exception.UserNotFoundException;
 import com.example.hello_java.repository.UserRepository;
 import com.example.hello_java.service.UserService;
@@ -46,6 +46,12 @@ public class UserServiceImpl implements UserService {
     @Value("${user.default.username}")
     private String defaultUsername;
 
+    /**
+     * 默认用户名 通过 @Value 注解注入配置文件中的属性
+     */
+    @Value("${user.default.timezone}")
+    private String defaultTimeZone;
+
     @SuppressWarnings("null")
     @Override
     public User getUserById(String id) {
@@ -73,11 +79,15 @@ public class UserServiceImpl implements UserService {
         }
 
         // 设置用户时间
-        LocalDateTime localDateTime = ZonedDateTime.now(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
+        LocalDateTime localDateTime = ZonedDateTime.now(ZoneId.of(defaultTimeZone)).toLocalDateTime();
         Date now = new Date(Timestamp.valueOf(localDateTime).getTime());
-        logger.info("Current date and time in Asia/Shanghai: " + now);
+        Date oversea = new Date(ZonedDateTime.now(ZoneId.of(defaultTimeZone)).toEpochSecond() * 1000);
 
-        if (Objects.isNull(user.getCreateTime())){
+        logger.info("Current date and time in " + defaultTimeZone + ":" + now);
+        logger.info("Current date and time in oversear time: " + oversea);
+
+        // 设置用户创建时间
+        if (Objects.isNull(user.getCreateTime())) {
             user.setCreateTime(now);
         }
 

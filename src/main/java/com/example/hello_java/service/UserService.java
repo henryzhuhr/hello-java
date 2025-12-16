@@ -1,7 +1,7 @@
 package com.example.hello_java.service;
 
 
-import com.example.hello_java.dao.User;
+import com.example.hello_java.entity.User;
 
 public interface UserService {
     
